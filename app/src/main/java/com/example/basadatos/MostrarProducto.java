@@ -3,19 +3,27 @@ package com.example.basadatos;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 public class MostrarProducto extends AppCompatActivity {
 
@@ -48,6 +56,40 @@ public class MostrarProducto extends AppCompatActivity {
             }
         });
     }
+    public void addDialog(View view){
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(MostrarProducto.this);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_singin, null);
+
+        final EditText nombreDialog = (EditText) mView.findViewById(R.id.nombre);
+        final EditText precioDialog = (EditText) mView.findViewById(R.id.precio);
+        Button addBtn = (Button) mView.findViewById(R.id.anyadirArticulo);
+
+        dialog.setView(mView);
+
+        AlertDialog addDialog = dialog.show();
+        addDialog.setCanceledOnTouchOutside(false);
+
+        addBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String nombre = nombreDialog.getText().toString();
+                String precio = precioDialog.getText().toString();
+
+                if(!nombre.equals("") && !precio.equals("") && db.insertData(nombre,precio)){
+                    Toast.makeText(MostrarProducto.this, "Datos Añadidos", Toast.LENGTH_SHORT).show();
+                    nombreDialog.setText("");
+                    precioDialog.setText("");
+                    Intent intent = new Intent(v.getContext(), MainActivity.class);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(MostrarProducto.this, "No se han podido añadir los datos", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+    }
+
 
     public void mostrarDatos(){
         cursor = db.mostrarDatos();
